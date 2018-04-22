@@ -1,3 +1,4 @@
 databse_videos/
 query/
-bin/
+bin/**/*.class
+**/.DS_Store
