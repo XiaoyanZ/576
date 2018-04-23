@@ -4,9 +4,6 @@
 - This is written in `Javascript` with `Node.js` (Prerequisition)
 - The generated mapping file has already been included in the project. Generally, there's `no` need to rerun this script unless the subsampling parameters were changed.
 
-  - Import a HTML file and watch it magically convert to Markdown
-  - Drag and drop images (requires your Dropbox account be linked)
-
 # Run
 ```sh
 npm install
