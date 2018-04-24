@@ -9,11 +9,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import javax.swing.JSlider;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -40,6 +44,8 @@ public class VideoQueryUI extends Frame implements ActionListener {
     private Button loadQueryButton;
     private Button loadResultButton;
     private Button searchButton;
+    public static JSlider slider;
+    
     private List resultListDisplay;
     private Map<String, Double> resultMap;
     private Map<String, Double> sortedResultMap;
@@ -135,8 +141,24 @@ public class VideoQueryUI extends Frame implements ActionListener {
 	    controlPanel.add(stopButton);
 	    resultControlPanel.add(resultStopButton);
 	    
+	    slider = new JSlider();
+		slider.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent arg0) {
+				
+			}
+		});
+//		slider.addMouseListener(new SliderMotionListener());
+		slider.setPaintTicks(true);
+		slider.setBorder(null);
+		slider.setBounds(604, 273, 352, 31);
+		slider.setValue(0);
+		listPanel.add(slider);
+	    
 	    listPanel.add(controlPanel);
 	    listPanel.add(resultControlPanel);
+		listPanel.add(slider);
+	    
 	    add(listPanel, BorderLayout.SOUTH);
 	    
 	    //Error Message
