@@ -1,4 +1,5 @@
 db/
 query/
+bin/*.class
 bin/**/*.class
 **/.DS_Store

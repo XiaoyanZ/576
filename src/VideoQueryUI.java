@@ -7,12 +7,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 public class VideoQueryUI extends Frame implements ActionListener {
+	private static final long serialVersionUID = 1L; // any unique long number
+			
     private ArrayList<BufferedImage> images; 
     private ArrayList<BufferedImage> dbImages;
     private PlaySound playSound;
@@ -33,6 +41,10 @@ public class VideoQueryUI extends Frame implements ActionListener {
     private Button loadResultButton;
     private Button searchButton;
     private List resultListDisplay;
+    private Map<String, Double> resultMap;
+    private Map<String, Double> sortedResultMap;
+    private ArrayList<Double> resultList;
+    private ArrayList<String> resultListRankedNames;
     private String fileName;
     private int playStatus = 3;//1 for play, 2 for pause, 3 for stop
     private int resultPlayStatus = 3;
@@ -475,13 +487,51 @@ public class VideoQueryUI extends Frame implements ActionListener {
 			}
 		} else if(e.getSource() == this.searchButton){
 			// Video query algorithm here
+
+			resultMap = new HashMap<String, Double>();
+			resultMap.put("flowers",100.00);
+			resultMap.put("interview",100.00);
+			resultMap.put("movie",100.00);
+			resultMap.put("musicvideo",100.00);
+			resultMap.put("sports",100.00);
+			resultMap.put("starcraft",100.00);
+			resultMap.put("traffic",100.00);
+			resultListDisplay.removeAll();
+		    resultListDisplay.add("Matched Videos:    ");
+		    resultList = new ArrayList<Double>(7);
+		    resultListRankedNames = new ArrayList<String>(7);
+			sortedResultMap = new HashMap<String, Double>();
+		    
+		    Iterator<Entry<String, Double>> it = resultMap.entrySet().iterator();
+		    while (it.hasNext()) {
+		        Entry<String, Double> pair = (Entry<String, Double>)it.next();
+		        String videoName = (String)pair.getKey();
+		        Double videoRank = new BigDecimal((Double)pair.getValue()).setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue();
+		        resultList.add(videoRank);
+		        sortedResultMap.put(videoName, videoRank);
+		    }
+		    Collections.sort(resultList);
+		    Collections.reverse(resultList);
+		    for(int i=0; i<resultList.size(); i++) {
+		    	Double tmpRank = resultList.get(i);
+		    	it = sortedResultMap.entrySet().iterator();
+			    while (it.hasNext()) {
+			    	Entry<String, Double> pair = (Entry<String, Double>)it.next();
+			    	Double videoRank = (Double)pair.getValue();
+			    	if(videoRank == tmpRank) {
+			    		resultListDisplay.add(pair.getKey() + "   " + (videoRank * 100) + "%");
+			    		resultListRankedNames.add((String)pair.getKey());
+			    		break;
+			    	}
+			    }
+		    }
 		} else if(e.getSource() == this.loadResultButton) {
 			// Load selected video in results
-			String userInput = "flowers";
-			if(userInput != null && !userInput.isEmpty()) {
-				this.playingThread = null;
-				this.audioThread = null;
-				this.loadDBVideo(userInput.trim());
+			int userSelect = resultListDisplay.getSelectedIndex() - 1;
+			if(userSelect > -1) {
+				this.playingDBThread = null;
+				this.audioDBThread = null;
+				this.loadDBVideo(resultListRankedNames.get(userSelect));
 			}
 		}
 	}
