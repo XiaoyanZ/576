@@ -429,6 +429,10 @@ public class VideoQueryUI extends Frame implements ActionListener {
 	    			index++;
 	    		}
 	    	  }
+	          if(dbImages.size() > 0){
+	        	  double s =MotionMatch.GetFrameScore(dbImages.get(dbImages.size() - 1), image, Constants.QUERY_VECTOR_MAP_LIST);
+	        	  System.out.println("frame similarity:" + s);
+	          }
 	          dbImages.add(image);
 	          is.close();
 	          playDBSound = new PlaySound(audioFilename);

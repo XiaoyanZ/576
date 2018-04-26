@@ -15,6 +15,7 @@ public class VideoQuery {
 	String filename = args[0];
 
     try {
+//    	Constants.QUERY_VECTOR_MAP_LIST = new ArrayList<HashMap<Point, Point>>();
     	for(int i=1; i<=150; i++) {
 	    	  String fileNum = "00";
 	    	  if(i < 100 && i > 9) {
@@ -49,7 +50,7 @@ public class VideoQuery {
 	    		}
 	    	  }
 	          if(images.size() > 0)
-	        	  MotionMatch.GetMotionVectors(images.get(images.size() - 1), image, filename + fileNum + new Integer(i).toString() );
+	        	  MotionMatch.GetMotionVectors(images.get(images.size() - 1), image, Constants.QUERY_VECTOR_MAP_LIST);
 	          images.add(image);
 	          is.close();
 	          playSound = new PlaySound(audioFilename);

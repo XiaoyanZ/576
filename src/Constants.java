@@ -1,3 +1,8 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.opencv.core.Point;
 
 public class Constants {
 
@@ -24,6 +29,9 @@ public class Constants {
 	public static final int LK_WINDOW_SIZE = 9;
 	public static final double LK_STD_DEV = 1.5;
 	public static final int LK_KERNEL_SIZE = 5;
+	public static final int LK_POINTS_INTERVAL = 20;
+	
+	public static List<HashMap<Point, Point>> QUERY_VECTOR_MAP_LIST = new ArrayList<HashMap<Point, Point>>();
 	
 	
 	
