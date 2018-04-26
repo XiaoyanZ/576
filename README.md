@@ -19,4 +19,9 @@ Please add `json-simple-1.1.1.jar` in folder `jar` into project libraries.
 For Eclipse:
 ```sh
 right click Project Name -> Properties -> Java Build Path -> Libraries -> Add External JARs
-```
+```  
+Install OpenCV following by this tutorial  
+[http://opencv-java-tutorials.readthedocs.io/en/latest/01-installing-opencv-for-java.html](http://opencv-java-tutorials.readthedocs.io/en/latest/01-installing-opencv-for-java.html)
+
+
+
