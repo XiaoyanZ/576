@@ -34,7 +34,7 @@ for(r of channelBins){
 //number of clusters, defaults to undefined
 clusterMaker.k(K);
 //number of iterations (higher number gives more time to converge), defaults to 1000
-clusterMaker.iterations(1);
+// clusterMaker.iterations(1);
 //data from which to identify clusters, defaults to []
 clusterMaker.data(HSVs);
 let result = clusterMaker.clusters();
@@ -60,7 +60,7 @@ for(r of channelBins){
         }
     }
 }
-fs.writeFile("./map.json", JSON.stringify(map, null, 4), (err) => {
+fs.writeFile("./map.json", JSON.stringify(map, null), (err) => {
     if (err) {
         console.error(err);
         return;
