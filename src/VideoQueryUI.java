@@ -29,7 +29,7 @@ public class VideoQueryUI extends Frame implements ActionListener {
     private ArrayList<BufferedImage> dbImages;
     private PlaySound playSound;
     private PlaySound playDBSound;
-    static final int frameRate = 30;
+    
     private JLabel imageLabel;
     private JLabel resultImageLabel;
     
@@ -60,12 +60,11 @@ public class VideoQueryUI extends Frame implements ActionListener {
     private Thread audioDBThread;
     private int currentFrameNum = 0;
     private int currentDBFrameNum = 0;
-    private int totalFrameNum = 150;
-    private int totalDBFrameNum = 600;
+
     private String fileFolder = System.getProperty("user.dir") + "/query";
     private String dbFileFolder = System.getProperty("user.dir") + "/db";
-    static final int WIDTH = 352;
-    static final int HEIGHT = 288;
+    static final int WIDTH = Constants.WIDTH;
+    static final int HEIGHT = Constants.HEIGHT;
 
 	public VideoQueryUI(ArrayList<BufferedImage> imgs, PlaySound pSound) {
 		
@@ -186,10 +185,10 @@ public class VideoQueryUI extends Frame implements ActionListener {
 		playingThread = new Thread() {
             public void run() {
 	            System.out.println("Start playing video: " + fileName);
-	          	for (int i = currentFrameNum; i < totalFrameNum; i++) {
+	          	for (int i = currentFrameNum; i < Constants.NO_QUERY_FRAMES; i++) {
 	          	  	imageLabel.setIcon(new ImageIcon(images.get(i)));
 	          	    try {
-	                  	sleep(1000/frameRate);
+	                  	sleep(1000/Constants.FRAME_RATE);
 	          	    } catch (InterruptedException e) {
 	          	    	if(playStatus == 3) {
 	          	    		currentFrameNum = 0;
@@ -227,10 +226,10 @@ public class VideoQueryUI extends Frame implements ActionListener {
 		playingDBThread = new Thread() {
             public void run() {
 	            System.out.println("Start playing result video: " + fileName);
-	          	for (int i = currentDBFrameNum; i < totalDBFrameNum; i++) {
+	          	for (int i = currentDBFrameNum; i < Constants.NO_DB_FRAMES; i++) {
 	          	  	resultImageLabel.setIcon(new ImageIcon(dbImages.get(i)));
 	          	    try {
-	                  	sleep(1000/frameRate);
+	                  	sleep(1000/Constants.FRAME_RATE);
 	          	    } catch (InterruptedException e) {
 	          	    	if(resultPlayStatus == 3) {
 	          	    		currentDBFrameNum = 0;
@@ -383,7 +382,7 @@ public class VideoQueryUI extends Frame implements ActionListener {
 	    }
 	    this.playStatus = 3;
 	    currentFrameNum = 0;
-	    totalFrameNum = images.size();
+	    Constants.NO_QUERY_FRAMES = images.size();
 	    displayScreenShot();
 	    System.out.println("End loading query video contents.");
 	}
@@ -444,7 +443,7 @@ public class VideoQueryUI extends Frame implements ActionListener {
 	    }
 	    this.resultPlayStatus = 3;
 	    currentDBFrameNum = 0;
-	    totalDBFrameNum = dbImages.size();
+	    Constants.NO_DB_FRAMES = dbImages.size();
 	    displayDBScreenShot();
 	    System.out.println("End loading db video contents.");
 	}
@@ -557,4 +556,5 @@ public class VideoQueryUI extends Frame implements ActionListener {
 			}
 		}
 	}
+	
 }

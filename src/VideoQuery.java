@@ -48,6 +48,8 @@ public class VideoQuery {
 	    			index++;
 	    		}
 	    	  }
+	          if(images.size() > 0)
+	        	  MotionMatch.GetMotionVectors(images.get(images.size() - 1), image, filename + fileNum + new Integer(i).toString() );
 	          images.add(image);
 	          is.close();
 	          playSound = new PlaySound(audioFilename);
