@@ -71,75 +71,80 @@ public class VideoQueryUI extends Frame implements ActionListener {
 		setImages(imgs);
 		setSound(pSound);
 
+		Panel topPanel = new Panel();
+		topPanel.setLayout(new BorderLayout());
+		
 		//Query Panel
 	    Panel queryPanel = new Panel();
+	    queryPanel.setLayout(new BorderLayout());
+	    
 	    queryField = new TextField(13);
 	    JLabel queryLabel = new JLabel("Query: ");
-	    queryPanel.add(queryLabel);
-	    queryPanel.add(queryField);
 	    loadQueryButton = new Button("Load Query Video");
 	    loadQueryButton.addActionListener(this);
-	    
 	    searchButton = new Button("Search");
 	    searchButton.setFont(new Font("monspaced", Font.BOLD, 60));
 	    searchButton.addActionListener(this);
-	    queryPanel.add(loadQueryButton);
-	    Panel searchPanel = new Panel();
-	    searchPanel.add(searchButton);
-	    Panel controlQueryPanel = new Panel();
-	    controlQueryPanel.setLayout(new GridLayout(2, 0));
-	    controlQueryPanel.add(queryPanel);
-	    controlQueryPanel.add(searchPanel);
-	    add(controlQueryPanel, BorderLayout.WEST);
+	    
+	    queryPanel.add(queryLabel, BorderLayout.WEST);
+	    queryPanel.add(queryField, BorderLayout.CENTER);
+	    queryPanel.add(loadQueryButton, BorderLayout.EAST);
+	    queryPanel.add(searchButton, BorderLayout.SOUTH);
 	    
 	    //Result Panel
 	    Panel resultPanel = new Panel();
+	    resultPanel.setLayout(new BorderLayout());
+	    
 	    resultListDisplay = new List(7);
 	    resultListDisplay.add("Matched Videos:    ");
-	    
-	    resultPanel.add(resultListDisplay, BorderLayout.SOUTH);
 	    loadResultButton = new Button("Load Selected Video");
 	    loadResultButton.addActionListener(this);
-	    resultPanel.add(loadResultButton);
-	    add(resultPanel, BorderLayout.EAST);
 	    
-	    //Video List Panel
-	    Panel listPanel = new Panel();
-	    listPanel.setLayout(new GridLayout(2, 2));
+	    resultPanel.add(resultListDisplay, BorderLayout.WEST);
+	    resultPanel.add(loadResultButton, BorderLayout.EAST);
+	    
+	    //Error Message
+	    errorLabel = new JLabel("");
+	    errorLabel.setForeground(Color.RED);
+	    
+	    topPanel.add(errorLabel, BorderLayout.NORTH);
+	    topPanel.add(queryPanel, BorderLayout.WEST);
+	    topPanel.add(resultPanel, BorderLayout.EAST);
+//	    controlQueryPanel.setLayout(new GridLayout(2, 0));
+	    
+	    add(topPanel, BorderLayout.NORTH);
+	    
+	  
+	    //Query video panel
+	    Panel queryVideoPanel = new Panel();
+	    queryVideoPanel.setLayout(new BorderLayout());
+	    
 	    this.imageLabel = new JLabel(new ImageIcon(images.get(currentFrameNum)));
-	    this.resultImageLabel = new JLabel(new ImageIcon(images.get(currentFrameNum)));
-	    Panel imagePanel = new Panel();
-	    imagePanel.add(this.imageLabel);
-	    Panel resultImagePanel = new Panel();
-	    resultImagePanel.add(this.resultImageLabel);
-	    listPanel.add(imagePanel);
-	    listPanel.add(resultImagePanel);
 	    
-	    //Control Panel
 	    Panel controlPanel = new Panel();
-	    Panel resultControlPanel = new Panel();
-	    
+	    controlPanel.setLayout(new BorderLayout());
 	    playButton = new Button("PLAY");
 	    playButton.addActionListener(this);
-	    resultPlayButton = new Button("PLAY");
-	    resultPlayButton.addActionListener(this);
-	    controlPanel.add(playButton);
-	    resultControlPanel.add(resultPlayButton);
-	    
 	    pauseButton = new Button("PAUSE");
 	    pauseButton.addActionListener(this);
-	    resultPauseButton = new Button("PAUSE");
-	    resultPauseButton.addActionListener(this);
-	    controlPanel.add(pauseButton);
-	    resultControlPanel.add(resultPauseButton);
-	    
 	    stopButton = new Button("STOP");
 	    stopButton.addActionListener(this);
-	    resultStopButton = new Button("STOP");
-	    resultStopButton.addActionListener(this);
-	    controlPanel.add(stopButton);
-	    resultControlPanel.add(resultStopButton);
+	    controlPanel.add(playButton, BorderLayout.WEST);
+	    controlPanel.add(pauseButton, BorderLayout.CENTER);
+	    controlPanel.add(stopButton, BorderLayout.EAST);
 	    
+	    queryVideoPanel.add(this.imageLabel, BorderLayout.CENTER);
+	    queryVideoPanel.add(controlPanel, BorderLayout.SOUTH);
+	    
+	    add(queryVideoPanel, BorderLayout.WEST);
+	    
+	    
+	    //Result video panel
+	    Panel resultVideoPanel = new Panel();
+	    resultVideoPanel.setLayout(new BorderLayout());
+	    
+	    Panel resultSliderPanel = new Panel();
+	    resultSliderPanel.setLayout(new BorderLayout());
 	    slider = new JSlider();
 		slider.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
@@ -152,18 +157,27 @@ public class VideoQueryUI extends Frame implements ActionListener {
 		slider.setBorder(null);
 		slider.setBounds(604, 273, 352, 31);
 		slider.setValue(0);
-		listPanel.add(slider);
+		resultSliderPanel.add(slider, BorderLayout.NORTH);
+		
+		this.resultImageLabel = new JLabel(new ImageIcon(images.get(currentFrameNum)));
+		
+		Panel resultControlPanel = new Panel();
+		resultControlPanel.setLayout(new BorderLayout());
+		resultPlayButton = new Button("PLAY");
+	    resultPlayButton.addActionListener(this);
+	    resultPauseButton = new Button("PAUSE");
+	    resultPauseButton.addActionListener(this);
+	    resultStopButton = new Button("STOP");
+	    resultStopButton.addActionListener(this);
+	    resultControlPanel.add(resultPlayButton, BorderLayout.WEST);
+	    resultControlPanel.add(resultPauseButton, BorderLayout.CENTER);
+	    resultControlPanel.add(resultStopButton, BorderLayout.EAST);
+
+	    resultVideoPanel.add(resultSliderPanel, BorderLayout.NORTH);
+	    resultVideoPanel.add(this.resultImageLabel, BorderLayout.CENTER);
+	    resultVideoPanel.add(resultControlPanel, BorderLayout.SOUTH);
 	    
-	    listPanel.add(controlPanel);
-	    listPanel.add(resultControlPanel);
-		listPanel.add(slider);
-	    
-	    add(listPanel, BorderLayout.SOUTH);
-	    
-	    //Error Message
-	    errorLabel = new JLabel("");
-	    errorLabel.setForeground(Color.RED);
-	    add(errorLabel, BorderLayout.NORTH);
+	    add(resultVideoPanel, BorderLayout.EAST);
 	    
 	}
 	
