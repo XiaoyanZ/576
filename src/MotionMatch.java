@@ -119,19 +119,19 @@ public class MotionMatch {
 	
 	        HashMap<Point,Point> dbmap = GetVectorMap(currentFrame, prevPtsNew, nextPtsNew, status);
 	
-	        double res = 0.0;
+	        double res = 0;
 	        for(HashMap<Point,Point> map : mapList) {
 	        	int count = 1;
 	        	double cosineSum = 0;
 	        	double distanceSum = 0;
 	        	for (Point key : dbmap.keySet()) {
+	        		count ++;
 	        		if(map.containsKey(key)){
-	        			count ++;
 	        			cosineSum += cosineSimilarity(new double[]{dbmap.get(key).x - key.x, dbmap.get(key).y - key.y}, new double[]{map.get(key).x - key.x, map.get(key).y - key.y});
 	        			double d = (Math.hypot(dbmap.get(key).x - key.x, dbmap.get(key).y - key.y) + Math.hypot(map.get(key).x - key.x, map.get(key).y - key.y));
 	        			if (d == 0.0) distanceSum += 1;
 	        			else distanceSum += (1 - Math.hypot(dbmap.get(key).x - map.get(key).x, dbmap.get(key).y - map.get(key).y) / d);
-	        		}
+	        		} 
 	        	}
 	        	
 	        	res = Math.max(res, (cosineSum + distanceSum) / (2 * count) );
@@ -143,42 +143,7 @@ public class MotionMatch {
 			return 0.0;
 		}
     }
-//	static Mat drawLine(Mat result, MatOfPoint2f corners, MatOfPoint2f points, MatOfByte status)
-//    {
-//        Mat tmp = result.clone();
-//        List<Point> cornersList  = corners.toList();
-//        List<Point> pointsList = points.toList();
-//        List<Byte> statusList = status.toList();
-//
-//
-//        HashMap<Point,Point> map = new HashMap<Point,Point>();
-//        for (int i = 0; i < pointsList.size(); i++)
-//        {
-//            if (statusList.get(i) == 1)
-//            {
-//                Point p1 = new Point();
-//                Point p2 = new Point();
-//                p1.x = (int) cornersList.get(i).x;
-//                p1.y = (int) cornersList.get(i).y;
-//                
-//                p2.x = (int) pointsList.get(i).x;
-//                p2.y = (int) pointsList.get(i).y;
-//               
-//                int changeX = Math.abs((int)(p1.x - p2.x));
-//                int changeY = Math.abs((int)(p1.y - p2.y));
-//                
-//                if (changeX <= 8 && changeY <= 8) {
-//                	Imgproc.line(tmp, p1, p2, new Scalar(0, 255, 0), 1, 8, 0);
-//                    Imgproc.circle(tmp, p2, 2, new Scalar(0, 0, 255));
-//                    map.put(p2,p1);// key : end point in current frame		value : start point in last frome
-//                } 
-//
-//            }
-//        }
-//        return tmp;
-//        
-//    }
-	
+
 	static HashMap<Point,Point> GetVectorMap(Mat result, MatOfPoint2f corners, MatOfPoint2f points, MatOfByte status)
     {
         Mat tmp = result.clone();

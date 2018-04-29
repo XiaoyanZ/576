@@ -22,7 +22,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import org.jfree.chart.ChartFactory;  
+import org.jfree.chart.ChartPanel;  
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
+
+import org.math.plot.*;
 
 public class VideoQueryUI extends Frame implements ActionListener,ChangeListener {
 	private static final long serialVersionUID = 1L; // any unique long number
@@ -35,6 +46,11 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
     
     private HashMap<String ,ArrayList<BufferedImage>> dbVideoMap = new HashMap<String ,ArrayList<BufferedImage>>();
     private HashMap<String, PlaySound> dbSoundMap = new HashMap<String, PlaySound>();
+    
+    private HashMap<String ,Double[]> overallScoreArrayMap = new HashMap<String ,Double[]>();
+    private HashMap<String ,Double[]> motionScoreArrayMap = new HashMap<String ,Double[]>();
+    private HashMap<String ,Double[]> colorScoreArrayMap = new HashMap<String ,Double[]>();
+    private HashMap<String ,Double> audioScoreMap = new HashMap<String ,Double>();
     
     private JLabel imageLabel;
     private JLabel resultImageLabel;
@@ -73,7 +89,10 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
     private String dbFileFolder = System.getProperty("user.dir") + "/db";
     static final int WIDTH = Constants.WIDTH;
     static final int HEIGHT = Constants.HEIGHT;
-
+    
+    Panel dataPanel;
+    ChartPanel chartPanel = new ChartPanel(null);
+    
 	public VideoQueryUI(String query) {
 		
 		
@@ -150,8 +169,11 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 	    Panel resultVideoPanel = new Panel();
 	    resultVideoPanel.setLayout(new BorderLayout());
 	    
+	    
 	    Panel resultSliderPanel = new Panel();
 	    resultSliderPanel.setLayout(new BorderLayout());
+	    dataPanel = resultSliderPanel;
+	    
 	    slider = new JSlider();
 //		slider.addChangeListener(this);
 		
@@ -229,6 +251,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 	      }
 	      //every query video in has 150 frames
 	      images = new ArrayList<BufferedImage>();
+	      Constants.QUERY_VECTOR_MAP_LIST.clear();
 	      String audioFilename = fileFolder + "/" + userInput + "/" + userInput + ".wav";
     	  
 	      for(int i=1; i<=150; i++) {
@@ -250,7 +273,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 	          while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
 	              offset += numRead;
 	          }
-	          System.out.println("Start loading frame: " + fullName);
+//	          System.out.println("Start loading frame: " + fullName);
 	    	  int index = 0;
 	          BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 	          for (int y = 0; y < HEIGHT; y++) {
@@ -263,9 +286,11 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 	    			index++;
 	    		}
 	    	  }
+	          if(images.size() > 0)
+	        	  MotionMatch.GetMotionVectors(images.get(images.size() - 1), image, Constants.QUERY_VECTOR_MAP_LIST);
 	          images.add(image);
 	          is.close();
-	          System.out.println("End loading query frame: " + fullName);
+//	          System.out.println("End loading query frame: " + fullName);
 	      }
 	      playSound = new PlaySound(audioFilename);
 	    } catch (FileNotFoundException e) {
@@ -306,7 +331,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 				  while (offset < bytes.length && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
 				      offset += numRead;
 				  }
-				  System.out.println("Start loading frame: " + fullName);
+//				  System.out.println("Start loading db frame: " + fullName);
 				  int index = 0;
 				  BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 				  for (int y = 0; y < HEIGHT; y++) {
@@ -319,14 +344,11 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 						index++;
 					}
 				  }
-//				  if(dbImages.size() > 0){
-//					  double s =MotionMatch.GetFrameScore(dbImages.get(dbImages.size() - 1), image, Constants.QUERY_VECTOR_MAP_LIST);
-//					  System.out.println("frame similarity:" + s);
-//				  }
+
 				  dbImages.add(image);
 				  is.close();
 
-				  System.out.println("End loading db frame: " + fullName);
+//				  System.out.println("End loading db frame: " + fullName);
 				}//end for
 				dbVideoMap.put(dbVideoName,dbImages);
 				dbSoundMap.put(dbVideoName,new PlaySound(audioFilename));
@@ -577,13 +599,21 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 			// Video query algorithm here
 
 			resultMap = new HashMap<String, Double>();
-			resultMap.put("flowers",100.00);
-			resultMap.put("interview",100.00);
-			resultMap.put("movie",100.00);
-			resultMap.put("musicvideo",100.00);
-			resultMap.put("sports",100.00);
-			resultMap.put("starcraft",100.00);
-			resultMap.put("traffic",100.00);
+			for(String dbVideo:Constants.DB_FILE_NAMES) {
+				Double[] scores = new Double[Constants.NO_DB_FRAMES];
+				for(int i = 0; i < scores.length; i++){
+					if(i == 0) {
+						scores[i] = 0.0;
+					} else {
+						Double score =MotionMatch.GetFrameScore(dbVideoMap.get(dbVideo).get(i - 1), dbVideoMap.get(dbVideo).get(i), Constants.QUERY_VECTOR_MAP_LIST);
+						scores[i] = score;
+					}
+
+				}
+				motionScoreArrayMap.put(dbVideo, scores);
+				resultMap.put(dbVideo, 100.0);
+			}
+	
 			resultListDisplay.removeAll();
 		    resultListDisplay.add("Matched Videos:    ");
 		    resultList = new ArrayList<Double>(7);
@@ -620,6 +650,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 				this.playingDBThread = null;
 				this.audioDBThread = null;
 				dbFileName = resultListRankedNames.get(userSelect);
+				DisplayChart();
 				displayDBScreenShot();
 			}
 		}
@@ -653,6 +684,62 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 //			}   
 		}
     }
+	
+	private CategoryDataset GetCurrentDataset() {
+	    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+	    String series0 = "Overall";
+	    String series1 = "Motion";
+	    String series2 = "Color";
+	    String series3 = "Audio";
+	    System.out.println(motionScoreArrayMap.get(dbFileName));
+	    for(Integer i = 0; i < Constants.NO_DB_FRAMES; i ++){
+//	    	dataset.addValue(overallScoreArrayMap.get(dbFileName)[i], series0, i);
+//	    	System.out.println(i+":"+motionScoreArrayMap.get(dbFileName)[i]);
+	    	dataset.addValue(motionScoreArrayMap.get(dbFileName)[i], series1, i);
+//	    	dataset.addValue(colorScoreArrayMap.get(dbFileName)[i], series2, i);
+//	    	dataset.addValue(audioScoreMap.get(dbFileName), series3, i);
+	    }
+	 
+	    return dataset;
+	}
 
+	private void DisplayChart () {
+		
+//		version1 chart
+		dataPanel.remove(chartPanel);
+		JFreeChart chart=ChartFactory.createLineChart(
+    			null,  //图表标题
+    			null,  //X轴lable
+    			null,  //Y轴lable
+    			GetCurrentDataset(), //数据集
+    			PlotOrientation.VERTICAL,
+    			//图表放置模式水平/垂直 
+    			false, //显示lable
+    			false,  //显示提示
+    			false //显示urls
+    			);
+		chartPanel = new ChartPanel(chart,false);
+		dataPanel.add(chartPanel,BorderLayout.SOUTH);
+		
+		/*version2 chart
+		double[] y = new double[motionScoreArrayMap.get(dbFileName).length];
+		
+		for(int i = 0; i < motionScoreArrayMap.get(dbFileName).length; i++){
+			y[i] = motionScoreArrayMap.get(dbFileName)[i];
+		}
+		
+		// create your PlotPanel (you can use it as a JPanel)
+		Plot2DPanel plot = new Plot2DPanel();
+		
+		// add a line plot to the PlotPanel
+		plot.addLinePlot("Motion", y);
+		 
+		dataPanel.setPreferredSize(new Dimension(Constants.WIDTH, 100));
+		
+		dataPanel.add(plot,BorderLayout.SOUTH);
+		*/
+
+
+	}
 	
 }
