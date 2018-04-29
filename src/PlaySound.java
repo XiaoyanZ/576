@@ -34,41 +34,41 @@ public class PlaySound {
     }
 
     public void play() throws PlayWaveException {
-
-    try {
-		this.waveStream = new FileInputStream(this.filename);
-	} catch (FileNotFoundException e2) {
-		// TODO Auto-generated catch block
-		e2.printStackTrace();
-	}
-	AudioInputStream audioInputStream = null;
-	try {
-		//add buffer for mark/reset support, modified by Jian
-		InputStream bufferedIn = new BufferedInputStream(this.waveStream);
-	    audioInputStream = AudioSystem.getAudioInputStream(bufferedIn);
-		
-	} catch (UnsupportedAudioFileException e1) {
-	    throw new PlayWaveException(e1);
-	} catch (IOException e1) {
-	    throw new PlayWaveException(e1);
-	}
-
-	try {
-		dataClip = AudioSystem.getClip();
-	} catch (LineUnavailableException e1) {
-	    throw new PlayWaveException(e1);
-	}
-
-	try {
-		// Starts the music :P
-		dataClip.open(audioInputStream);
-		dataClip.setFramePosition(pause);  // Must always rewind!
-		dataClip.loop(pause);
-		dataClip.start();
-	} catch (LineUnavailableException | IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+	
+	    try {
+			this.waveStream = new FileInputStream(this.filename);
+		} catch (FileNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		AudioInputStream audioInputStream = null;
+		try {
+			//add buffer for mark/reset support, modified by Jian
+			InputStream bufferedIn = new BufferedInputStream(this.waveStream);
+		    audioInputStream = AudioSystem.getAudioInputStream(bufferedIn);
+			
+		} catch (UnsupportedAudioFileException e1) {
+		    throw new PlayWaveException(e1);
+		} catch (IOException e1) {
+		    throw new PlayWaveException(e1);
+		}
+	
+		try {
+			dataClip = AudioSystem.getClip();
+		} catch (LineUnavailableException e1) {
+		    throw new PlayWaveException(e1);
+		}
+	
+		try {
+			// Starts the music :P
+			dataClip.open(audioInputStream);
+			dataClip.setFramePosition(pause);  // Must always rewind!
+			dataClip.loop(pause);
+			dataClip.start();
+		} catch (LineUnavailableException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     public void pause() {
@@ -76,6 +76,7 @@ public class PlaySound {
     	dataClip.stop();
     }
     
+
     public void loop(){
     	dataClip.loop(Clip.LOOP_CONTINUOUSLY);
     }

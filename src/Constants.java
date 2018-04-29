@@ -8,10 +8,8 @@ public class Constants {
 
 	static final String VIDEO_FILE_EXTENSION = ".rgb";
 	static final String AUDIO_FILE_EXTENSION = ".wav";
-	static final String[] FILE_NAMES = { "soccer1", "soccer2", "soccer3", "soccer4",
-											"talk1", "talk2", "talk3", "talk4",
-											"wreck1", "wreck2", "wreck3", "wreck4" 
-										};
+	static final String[] DB_FILE_NAMES = { "flowers", "interview", "movie", "musicvideo",
+											"sports", "starcraft", "traffic"};
 
 	static final int WIDTH = 352;
 	static final int HEIGHT = 288;
