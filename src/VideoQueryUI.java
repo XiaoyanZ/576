@@ -95,8 +95,6 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
     
 	public VideoQueryUI(String query) {
 		
-		
-
 		Panel topPanel = new Panel();
 		topPanel.setLayout(new BorderLayout());
 		
@@ -720,6 +718,9 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
     			);
 		chartPanel = new ChartPanel(chart,false);
 		dataPanel.add(chartPanel,BorderLayout.SOUTH);
+		invalidate();
+		validate();
+		repaint();
 		
 		/*version2 chart
 		double[] y = new double[motionScoreArrayMap.get(dbFileName).length];
