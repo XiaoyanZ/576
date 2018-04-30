@@ -14,12 +14,22 @@ javac VideoQuery.java
 java VideoQuery first :: first is the file name in query folder
 ```
 
-##To run Preprocess
+##Color
+###Preprocess
 Please add `json-simple-1.1.1.jar` in folder `jar` into project libraries.
 For Eclipse:
 ```sh
 right click Project Name -> Properties -> Java Build Path -> Libraries -> Add External JARs
 ```  
+Then run class `Preprocess` and make sure all the result JSON files are generated successfully.
+###Generate dissimilarity score array
+Run `ColorComparator` and see the results in the ArrayList<Double>
+To be more accurate, you can decrease two subsampling parameter:
+`private int SUB_SAMPLE_RATE = 10;`
+`private int LAST_150_SUBSAMPLE_RATE = 5;`
+
+
+###OpenCV
 Install OpenCV following by this tutorial  
 [http://opencv-java-tutorials.readthedocs.io/en/latest/01-installing-opencv-for-java.html](http://opencv-java-tutorials.readthedocs.io/en/latest/01-installing-opencv-for-java.html)
 
