@@ -29,6 +29,12 @@ public class Constants {
 	public static final int LK_KERNEL_SIZE = 5;
 	public static final int LK_POINTS_INTERVAL = 20;
 	
+	static final int AUDIO_WINDOW = 1024 * 8;	//window size for STFT
+	//static final int PRATE = 30;		//rate to select the peak point in coordinate of time and frequency
+	static final int AUDIO_FRETARGET = 100000;	//frequency of target zone
+	static final double AUDIO_TIMETARGET = 0.3;	//time of target zone
+	static final int AUDIO_LMSIZE = 2;		//size of landmarks per window
+	
 	public static List<HashMap<Point, Point>> QUERY_VECTOR_MAP_LIST = new ArrayList<HashMap<Point, Point>>();
 	
 	

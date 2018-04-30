@@ -239,10 +239,25 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 		queryFileName = query;
 		this.loadVideo(queryFileName);
 	}
-
+	
+	private HashMap<String, Double> StandardizedAudioMap(HashMap<String, Integer> map){
+		HashMap<String, Double> resultMap = new HashMap<String, Double>();
+		Double max = 0.0;
+		for (Map.Entry<String, Integer> entry : map.entrySet()) {  
+		    max = Math.max(max, entry.getValue());
+		}  
+		for (Map.Entry<String, Integer> entry : map.entrySet()) {  
+		    resultMap.put(entry.getKey(), entry.getValue() / max);
+		}  
+		return resultMap;
+	}
 	
 	private void loadVideo(String userInput) {
 		System.out.println("Start loading query video contents.");
+		
+		//Match audio
+		audioScoreMap = StandardizedAudioMap(AudioMatch.GetAudioMap(userInput));
+		
 	    try {
 	      if(userInput == null || userInput.isEmpty()){
 	    	  return;
@@ -259,7 +274,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 	    	  } else if(i > 99) {
 	    		  fileNum = "";
 	    	  }
-	    	  String fullName = fileFolder + "/" + userInput + "/" + userInput + fileNum + new Integer(i).toString() + ".rgb";
+	    	  String fullName = fileFolder + "/" + userInput + "/" + userInput + "_" + fileNum + new Integer(i).toString() + ".rgb";
 	    	  
 	    	  File file = new File(fullName);
 	    	  InputStream is = new FileInputStream(file);
@@ -695,7 +710,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 //	    	System.out.println(i+":"+motionScoreArrayMap.get(dbFileName)[i]);
 	    	dataset.addValue(motionScoreArrayMap.get(dbFileName)[i], series1, i);
 //	    	dataset.addValue(colorScoreArrayMap.get(dbFileName)[i], series2, i);
-//	    	dataset.addValue(audioScoreMap.get(dbFileName), series3, i);
+	    	dataset.addValue(audioScoreMap.get(dbFileName), series3, i);
 	    }
 	 
 	    return dataset;
