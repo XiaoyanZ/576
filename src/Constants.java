@@ -27,7 +27,7 @@ public class Constants {
 	public static final int LK_WINDOW_SIZE = 9;
 	public static final double LK_STD_DEV = 1.5;
 	public static final int LK_KERNEL_SIZE = 5;
-	public static final int LK_POINTS_INTERVAL = 20;
+	public static final int LK_POINTS_INTERVAL = 40;
 	
 	static final int AUDIO_WINDOW = 1024 * 8;	//window size for STFT
 	//static final int PRATE = 30;		//rate to select the peak point in coordinate of time and frequency

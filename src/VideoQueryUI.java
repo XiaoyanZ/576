@@ -670,6 +670,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 				resultMap.put(dbVideo, maxScore / Constants.NO_QUERY_FRAMES);
 				
 			}
+			System.out.println("Finish search!");
 	
 			resultListDisplay.removeAll();
 		    resultListDisplay.add("Matched Videos:    ");

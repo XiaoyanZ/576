@@ -175,7 +175,7 @@ public class MotionMatch {
 
             }
         }
-        System.out.println("map size:" + map.size());
+//        System.out.println("map size:" + map.size());
         return map;
     }
 	
