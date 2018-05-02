@@ -126,7 +126,7 @@ public class AudioMatch {
 				resultMap.put(Constants.DB_FILE_NAMES[i], count[i]);
 			}
 		   
-		    System.out.println(resultMap);
+//		    System.out.println(resultMap);
 		   	return resultMap;
 		}
 		return null;
