@@ -241,15 +241,16 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 		this.loadVideo(queryFileName);
 	}
 	
-	private HashMap<String, Double> StandardizedAudioMap(HashMap<String, Integer> map){
+	private HashMap<String, Double> StandardizedAudioMap(HashMap<String, Double> map){
 		HashMap<String, Double> resultMap = new HashMap<String, Double>();
-		Double max = 0.0;
-		for (Map.Entry<String, Integer> entry : map.entrySet()) {  
-		    max = Math.max(max, entry.getValue());
-		}  
-		for (Map.Entry<String, Integer> entry : map.entrySet()) {  
-		    resultMap.put(entry.getKey(), entry.getValue() / max);
-		}  
+//		Double max = 0.0;
+//		for (Map.Entry<String, Integer> entry : map.entrySet()) {  
+//		    max = Math.max(max, entry.getValue());
+//		}  
+//		for (Map.Entry<String, Integer> entry : map.entrySet()) {  
+//		    resultMap.put(entry.getKey(), entry.getValue() / max);
+//		}  
+		resultMap = map;
 		return resultMap;
 	}
 	
@@ -258,6 +259,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 		
 		//Match audio
 		audioScoreMap = StandardizedAudioMap(AudioMatch.GetAudioMap(userInput));
+		
 		
 	    try {
 	      if(userInput == null || userInput.isEmpty()){
@@ -549,6 +551,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
 		if(e.getSource() == this.playButton) {
 			System.out.println("play button clicked");
 			if(this.playStatus > 1) {
@@ -611,9 +614,12 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 			}
 		} else if(e.getSource() == this.searchButton){
 			// Video query algorithm here
-
+			System.out.println("Start search!");
+			
 			resultMap = new HashMap<String, Double>();
 			for(String dbVideo:Constants.DB_FILE_NAMES) {
+				//Motion Match
+				
 				Double[] scores = new Double[Constants.NO_DB_FRAMES];
 				for(int i = 0; i < scores.length; i++){
 					if(i == 0) {
@@ -627,6 +633,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 				motionScoreArrayMap.put(dbVideo, scores);
 				
 				
+				//Color Match
 				ColorComparator cc;
 				try {
 					cc = new ColorComparator();
@@ -640,6 +647,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 					e1.printStackTrace();
 				}
 				
+				//Overall Match
 				Double[] overallScore = new Double[Constants.NO_DB_FRAMES];
 				
 				for(int i = 0; i < Constants.NO_DB_FRAMES; i++){
@@ -648,6 +656,8 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 				
 				overallScoreArrayMap.put(dbVideo, overallScore);
 				
+				
+				//Multiple Match
 				Double[] multipleScore = new Double[Constants.NO_DB_FRAMES];
 				
 				for(int i = 0; i < Constants.NO_DB_FRAMES; i++){
@@ -656,6 +666,8 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 				
 				multipleScoreArrayMap.put(dbVideo, multipleScore);
 				
+				
+				//Caculate Score
 				double score = 0.0;
 				for(int i = 0; i < Constants.NO_QUERY_FRAMES; i ++){
 					score += overallScoreArrayMap.get(dbVideo)[i];
@@ -672,6 +684,8 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 			}
 			System.out.println("Finish search!");
 	
+			
+			//Sort
 			resultListDisplay.removeAll();
 		    resultListDisplay.add("Matched Videos:    ");
 		    resultList = new ArrayList<Double>(7);
@@ -695,7 +709,8 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 			    	Entry<String, Double> pair = (Entry<String, Double>)it.next();
 			    	Double videoRank = (Double)pair.getValue();
 			    	if(videoRank == tmpRank) {
-			    		resultListDisplay.add(pair.getKey() + "   " + (videoRank * 100) + "%");
+			    		String displayScore = String.format("%.2f", videoRank * 100);
+			    		resultListDisplay.add(pair.getKey() + "   " + displayScore + "%");
 			    		resultListRankedNames.add((String)pair.getKey());
 			    		break;
 			    	}
@@ -770,7 +785,6 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 	    String series2 = "Color";
 	    String series3 = "Audio";
 	    String series4 = "Multiple";
-	    System.out.println(motionScoreArrayMap.get(dbFileName));
 	    for(Integer i = 0; i < Constants.NO_DB_FRAMES; i ++){
 	    	dataset.addValue(overallScoreArrayMap.get(dbFileName)[i], series0, i);
 	    	dataset.addValue(motionScoreArrayMap.get(dbFileName)[i], series1, i);

@@ -5,10 +5,10 @@ import java.util.LinkedList;
 import javax.swing.JFrame;
 
 public class AudioMatch {
-	public static HashMap<String,Integer> GetAudioMap(String query){
+	public static HashMap<String,Double> GetAudioMap(String query){
 		if(query == "" || query == null)
 			return null;
-		HashMap<String,Integer> resultMap = new HashMap<String,Integer>();
+		HashMap<String,Double> resultMap = new HashMap<String,Double>();
 		
 		String filename = query;
 		
@@ -24,7 +24,7 @@ public class AudioMatch {
 	
 		
 		       
-		int[] count = {0,0,0,0,0,0,0};
+		double[] count = {0.0,0.0,0.0,0.0,0.0,0.0,0.0};
 		
 		WaveFileReader reader = new WaveFileReader(filename,"query");       
 		
@@ -88,7 +88,7 @@ public class AudioMatch {
 		    //System.out.println("Test's countLM: " + countLM);
 		
 		    //get fingerprint
-		    int countFP = 0;
+		    double countFP = 0.0;
 		    java.util.Iterator<Landmark> itOut = landmarks.iterator();
 		    
 		
@@ -105,13 +105,13 @@ public class AudioMatch {
 		    			
 		    			
 		    			if(fps.containsKey(fingerPrint)){
-		    				countFP++;
+		    				countFP += 1.0;
 		        			
 		        			int id = fps.get(fingerPrint);
 		        			//7 bits represent 7 files in database
 		        			for(int i = 0; i < 7; i++){
 		        				if((id & (1 << i)) != 0){
-		        					count[i]++;
+		        					count[i] += 1.0;
 		        				}
 		        			}
 		    			}
@@ -123,7 +123,7 @@ public class AudioMatch {
 
 		    
 		    for(int i = 0; i < Constants.DB_FILE_NAMES.length; i++){
-				resultMap.put(Constants.DB_FILE_NAMES[i], count[i]);
+				resultMap.put(Constants.DB_FILE_NAMES[i], count[i]/countFP);
 			}
 		   
 //		    System.out.println(resultMap);
