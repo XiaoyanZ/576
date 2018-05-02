@@ -20,8 +20,8 @@ public class ColorComparator {
 	private String resultBase = "";
 	private int QUERY_SIZE = 150;
 	private int DB_SIZE = 600;
-	private int SUB_SAMPLE_RATE = 10;
-	private int LAST_150_SUBSAMPLE_RATE = 5;
+	private int SUB_SAMPLE_RATE = 30;
+	private int LAST_150_SUBSAMPLE_RATE = 150;
     public static int HEIGHT = 288;
     public static int WIDTH = 352;
     public static int RGB_SUBSAMPLE_RATE = 16;
@@ -49,7 +49,7 @@ public class ColorComparator {
 		String queryPathBase = "query/"+queryFolder+"/" + queryFolder;
 		for(int j = 0; j < this.QUERY_SIZE; j++) {
 			String queryFileNum = String.format("%03d", j + 1);
-			String queryPath = queryPathBase + queryFileNum + ".rgb";
+			String queryPath = queryPathBase +"_"+ queryFileNum + ".rgb";
 			HashMap<String, Histogram> hm = new HashMap<String, Histogram>();
 	    	Histogram topleftH = new Histogram("topleft");
 	    	hm.put(topleftH.position, topleftH);
@@ -146,13 +146,13 @@ public class ColorComparator {
 			int j = 0;
 			for(; j * SUB_SAMPLE_RATE < QUERY_SIZE; j++) {
 				int index = j * SUB_SAMPLE_RATE;
-				System.out.println("db frame " + (i + index +1) + " compared with query frame " + (index + 1)); 
+//				System.out.println("db frame " + (i + index +1) + " compared with query frame " + (index + 1)); 
 				double score = computeHistogramDissimilarity(i + index + 1, index + 1);
 				sum += score;
 			}
 			result.add(sum / j);
 		}
-		System.out.println();
+//		System.out.println();
 		//last 150 frames
 		for(int i = DB_SIZE - QUERY_SIZE + 2; i < DB_SIZE -  + 1; i ++) {
 			int len = DB_SIZE - i + 1;
@@ -164,8 +164,8 @@ public class ColorComparator {
 				for(int index = start + startBase * LAST_150_SUBSAMPLE_RATE; (i + j * SUB_SAMPLE_RATE <= DB_SIZE) && (index + j * SUB_SAMPLE_RATE <= QUERY_SIZE); j++) {
 					double score = computeHistogramDissimilarity(i + j * SUB_SAMPLE_RATE, index + j * SUB_SAMPLE_RATE);
 					sum += score;
-					System.out.println("[db frame " + i + "] compared with query from " + index + " on stage [db " + (i + j * SUB_SAMPLE_RATE) + 
-							"] - [query " + (index + j * SUB_SAMPLE_RATE) + "]"  );
+//					System.out.println("[db frame " + i + "] compared with query from " + index + " on stage [db " + (i + j * SUB_SAMPLE_RATE) + 
+//							"] - [query " + (index + j * SUB_SAMPLE_RATE) + "]"  );
 					
 				}
 				dummy += sum / j;
@@ -176,15 +176,5 @@ public class ColorComparator {
 		return result;
 	}
 	
-	public static void main(String[] args) throws FileNotFoundException, IOException, ParseException {
-		ColorComparator cc = new ColorComparator();
-		
-		cc.readQuery("first");
-		ArrayList<Double> f;
-		String[] resultFolders = new String[] {"musicvideo", "sports", "flowers", "interview", "movie", "starcraft", "traffic"};
-		for(String str: resultFolders) {
-			f = cc.computeDissimilarityByResultFolder(str);
-		}
-	
-	}
+
 }

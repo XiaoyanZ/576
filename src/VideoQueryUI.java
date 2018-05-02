@@ -32,10 +32,10 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-
+import org.json.simple.parser.ParseException;
 import org.math.plot.*;
 
-public class VideoQueryUI extends Frame implements ActionListener,ChangeListener {
+public class VideoQueryUI extends Frame implements ActionListener,ChangeListener  {
 	private static final long serialVersionUID = 1L; // any unique long number
 			
 	private String queryFileName = "";
@@ -51,6 +51,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
     private HashMap<String ,Double[]> motionScoreArrayMap = new HashMap<String ,Double[]>();
     private HashMap<String ,Double[]> colorScoreArrayMap = new HashMap<String ,Double[]>();
     private HashMap<String ,Double> audioScoreMap = new HashMap<String ,Double>();
+    private HashMap<String ,Double[]> multipleScoreArrayMap = new HashMap<String ,Double[]>();
     
     private JLabel imageLabel;
     private JLabel resultImageLabel;
@@ -624,7 +625,50 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 
 				}
 				motionScoreArrayMap.put(dbVideo, scores);
-				resultMap.put(dbVideo, 100.0);
+				
+				
+				ColorComparator cc;
+				try {
+					cc = new ColorComparator();
+					cc.readQuery(queryFileName);
+					ArrayList<Double> f = cc.computeDissimilarityByResultFolder(dbVideo);
+
+					colorScoreArrayMap.put(dbVideo, convertDissimilarityToScore(f));
+				
+				} catch (IOException | ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				Double[] overallScore = new Double[Constants.NO_DB_FRAMES];
+				
+				for(int i = 0; i < Constants.NO_DB_FRAMES; i++){
+					overallScore[i] = (colorScoreArrayMap.get(dbVideo)[i] * Constants.COLOR_WEIGHT + motionScoreArrayMap.get(dbVideo)[i] * Constants.MOTION_WEIGHT + audioScoreMap.get(dbVideo) * Constants.AUDIO_WEIGHT) / (Constants.COLOR_WEIGHT + Constants.MOTION_WEIGHT + Constants.AUDIO_WEIGHT);
+				}
+				
+				overallScoreArrayMap.put(dbVideo, overallScore);
+				
+				Double[] multipleScore = new Double[Constants.NO_DB_FRAMES];
+				
+				for(int i = 0; i < Constants.NO_DB_FRAMES; i++){
+					multipleScore[i] = colorScoreArrayMap.get(dbVideo)[i] * motionScoreArrayMap.get(dbVideo)[i] * audioScoreMap.get(dbVideo) ;
+				}
+				
+				multipleScoreArrayMap.put(dbVideo, multipleScore);
+				
+				double score = 0.0;
+				for(int i = 0; i < Constants.NO_QUERY_FRAMES; i ++){
+					score += overallScoreArrayMap.get(dbVideo)[i];
+				}
+				double maxScore = score; 
+				
+				for(int i = 0, j = Constants.NO_QUERY_FRAMES - 1; j < Constants.NO_DB_FRAMES; i ++, j ++) {
+					score = score + overallScoreArrayMap.get(dbVideo)[j] - overallScoreArrayMap.get(dbVideo)[i];
+					maxScore = Math.max(maxScore, score);
+				}
+				
+				resultMap.put(dbVideo, maxScore / Constants.NO_QUERY_FRAMES);
+				
 			}
 	
 			resultListDisplay.removeAll();
@@ -669,6 +713,26 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 		}
 	}
 	
+	private Double[] convertDissimilarityToScore (ArrayList<Double> originalList) {
+		Double[] originalArray = originalList.toArray(new Double[originalList.size()]);
+		Double[] resArray = new Double[Constants.NO_DB_FRAMES];
+		Double max = 0.0;
+		for(int i = 0; i < Constants.NO_DB_FRAMES; i++){
+			resArray[i] = 0.0;
+		}
+		for(int i = 0; i < originalArray.length; i++){
+			max = Math.max(max, originalArray[i]);
+		}
+		
+		for(int i = 0; i < originalArray.length; i++){
+			Double currentScore = 1 - originalArray[i]/max;
+			for (int j = 0; j < Constants.NO_QUERY_FRAMES && i + j < Constants.NO_DB_FRAMES; j++){
+				resArray[i + j] = Math.max(resArray[i + j], currentScore);
+			}
+		}
+		return resArray;
+	}
+	
 	
 	@Override
 	public void stateChanged(ChangeEvent e) {
@@ -704,13 +768,15 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 	    String series1 = "Motion";
 	    String series2 = "Color";
 	    String series3 = "Audio";
+	    String series4 = "Multiple";
 	    System.out.println(motionScoreArrayMap.get(dbFileName));
 	    for(Integer i = 0; i < Constants.NO_DB_FRAMES; i ++){
-//	    	dataset.addValue(overallScoreArrayMap.get(dbFileName)[i], series0, i);
-//	    	System.out.println(i+":"+motionScoreArrayMap.get(dbFileName)[i]);
+	    	dataset.addValue(overallScoreArrayMap.get(dbFileName)[i], series0, i);
 	    	dataset.addValue(motionScoreArrayMap.get(dbFileName)[i], series1, i);
-//	    	dataset.addValue(colorScoreArrayMap.get(dbFileName)[i], series2, i);
+	    	dataset.addValue(colorScoreArrayMap.get(dbFileName)[i], series2, i);
 	    	dataset.addValue(audioScoreMap.get(dbFileName), series3, i);
+	    	dataset.addValue(multipleScoreArrayMap.get(dbFileName)[i], series4, i);
+	    	
 	    }
 	 
 	    return dataset;
@@ -727,7 +793,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
     			GetCurrentDataset(), //数据集
     			PlotOrientation.VERTICAL,
     			//图表放置模式水平/垂直 
-    			false, //显示lable
+    			true, //显示lable
     			false,  //显示提示
     			false //显示urls
     			);

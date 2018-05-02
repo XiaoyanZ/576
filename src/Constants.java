@@ -38,6 +38,8 @@ public class Constants {
 	public static List<HashMap<Point, Point>> QUERY_VECTOR_MAP_LIST = new ArrayList<HashMap<Point, Point>>();
 	
 	
-	
+	static final int COLOR_WEIGHT = 2;	
+	static final int MOTION_WEIGHT = 2;	
+	static final int AUDIO_WEIGHT = 1;	
 	
 }
