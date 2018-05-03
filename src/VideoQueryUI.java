@@ -661,7 +661,7 @@ public class VideoQueryUI extends Frame implements ActionListener,ChangeListener
 				Double[] multipleScore = new Double[Constants.NO_DB_FRAMES];
 				
 				for(int i = 0; i < Constants.NO_DB_FRAMES; i++){
-					multipleScore[i] = colorScoreArrayMap.get(dbVideo)[i] * motionScoreArrayMap.get(dbVideo)[i] * audioScoreMap.get(dbVideo) ;
+					multipleScore[i] = colorScoreArrayMap.get(dbVideo)[i] * motionScoreArrayMap.get(dbVideo)[i] ;//* audioScoreMap.get(dbVideo) ;
 				}
 				
 				multipleScoreArrayMap.put(dbVideo, multipleScore);
